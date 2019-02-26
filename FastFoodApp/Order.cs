@@ -1,8 +1,9 @@
-﻿using System;
+﻿// Programmer: Lacy Tesdall
+// Details: This stores all of the sandwiches, drinks, and fries for a user's order.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static FastFoodApp.MainWindow;
 
 namespace FastFoodApp
@@ -43,10 +44,22 @@ namespace FastFoodApp
 
             return sandwichPrice;
         }
+
         public float calculateDrinkPrices() { return DRINK_PRICE * drinks; }
+
         public float calculateFriesPrices() { return FRIES_PRICE * fries; }
 
-        public void addSandwich(Sandwich newSandwich) { sandwiches.Add(newSandwich); }
+        public void addSandwich(Sandwich newSandwich)
+        {
+            if (newSandwich.Equals(null))
+            {
+                throw new ArgumentNullException("Cannot add a null sandwich to the list");
+            }
+            else
+            {
+                sandwiches.Add(newSandwich);
+            }
+        }
 
         public Sandwich getSandwich(int position) { return sandwiches.ElementAt(position); }
 
@@ -55,7 +68,13 @@ namespace FastFoodApp
         public void addDrinks(int newDrinks)
         {
             if (newDrinks == 1)
+            {
                 this.drinks++;
+            }
+            else if (newDrinks < 0)
+            {
+                throw new ArgumentOutOfRangeException("Drinks cannot be negative");
+            }
         }
 
         public int getDrinks() { return this.drinks; }
@@ -63,7 +82,13 @@ namespace FastFoodApp
         public void addFries(int newFries)
         {
             if (newFries == 1)
+            {
                 this.fries++;
+            }
+            else if (newFries < 0)
+            {
+                throw new ArgumentOutOfRangeException("Fries cannot be negative");
+            }
         }
 
         public int getFries() { return this.fries; }

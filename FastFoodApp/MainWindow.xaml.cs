@@ -1,20 +1,11 @@
 ﻿// Programmer: Lacy Tesdall
-// Details: This page... 
+// Details: This page allows the user to create an order by adding a variety of meals, which includes the sandwich type, toppings, fries, and drinks.
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace FastFoodApp
 {
@@ -23,27 +14,27 @@ namespace FastFoodApp
     public enum Toppings { lettuce, tomato, pickles, onion, cheese, egg }
 
     public partial class MainWindow : Window
-    {   
+    {
         // Constants
-        public const float  CHICKEN_PRICE = 8.99F;
-        public const float  TURKEY_PRICE  = 9.99F;
-        public const float  VEGGIE_PRICE  = 12.99F;
-        public const float  FISH_PRICE    = 5.99F;
-        public const float  DRINK_PRICE   = 0.99F;
-        public const float  FRIES_PRICE   = 1.99F;
-        public const float  TAX           = 0.02F;
+        public const float CHICKEN_PRICE = 8.99F;
+        public const float DRINK_PRICE = 0.99F;
+        public const float FISH_PRICE = 5.99F;
+        public const float FRIES_PRICE = 1.99F;
+        public const float TURKEY_PRICE = 9.99F;
+        public const float VEGGIE_PRICE = 12.99F;
+        public const float TAX = 0.02F;
 
         // Structure
         public struct Sandwich
         {
             private SandwichTypes type;
-            private float         price;
-            private List<String>  toppings;
+            private float price;
+            private List<String> toppings;
 
             public Sandwich(SandwichTypes newType, float newPrice, List<String> newToppings)
             {
-                this.type     = newType;
-                this.price    = newPrice;
+                this.type = newType;
+                this.price = newPrice;
                 this.toppings = newToppings;
             }
 
@@ -68,14 +59,14 @@ namespace FastFoodApp
         }
 
         // Variables
-        private Sandwich      sandwichOrder;
+        private Sandwich sandwichOrder;
         private SandwichTypes sandwichType;
-        private float         sandwichPrice;
-        private List<String>  toppings;
-        private Order         finalOrder  = new Order();
-        private int           numOfOrders = 0;
-        private int           drinks      = 0;
-        private int           fries       = 0;
+        private float sandwichPrice;
+        private List<String> toppings;
+        private Order finalOrder = new Order();
+        private int numOfOrders = 0;
+        private int drinks = 0;
+        private int fries = 0;
 
         public MainWindow()
         {
@@ -83,9 +74,9 @@ namespace FastFoodApp
             InitializeComponent();
 
             // Initialize ComboBox with the sandwhich types and prices
-            foreach(SandwichTypes s in Enum.GetValues(typeof(SandwichTypes)))
+            foreach (SandwichTypes s in Enum.GetValues(typeof(SandwichTypes)))
             {
-                switch(s)
+                switch (s)
                 {
                     case SandwichTypes.Chicken:
                         SandwichTypeList.Items.Add(s + String.Format(" - {0:C}", CHICKEN_PRICE));
@@ -116,8 +107,8 @@ namespace FastFoodApp
         /// <summary>
         /// Creates a meal and adds it to the order
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control who initated the action</param>
+        /// <param name="e">Information pertaining to the event</param>
         private void AddToOrder(object sender, RoutedEventArgs e)
         {
             if (SandwichTypeList.SelectedItem == null)
@@ -132,7 +123,7 @@ namespace FastFoodApp
 
                 // Get the sandwich type
                 String[] type = SandwichTypeList.SelectedItem.ToString().Split(' ');
-                sandwichType  = (SandwichTypes) Enum.Parse(typeof(SandwichTypes), type[0]);
+                sandwichType = (SandwichTypes)Enum.Parse(typeof(SandwichTypes), type[0]);
 
                 // Get the sandwich price
                 switch (sandwichType)
@@ -155,11 +146,12 @@ namespace FastFoodApp
                 }
 
                 // Get the sandwich toppings, fries, and drinks
-                foreach(CheckBox c in ToppingsList.Children.OfType<CheckBox>())
+                foreach (CheckBox c in ToppingsList.Children.OfType<CheckBox>())
                 {
                     if (c.IsChecked == true)
                     {
-                        toppings.Add(c.Content.ToString());
+                        if (Enum.IsDefined(typeof(Toppings), c.Content.ToString()))
+                            toppings.Add(c.Content.ToString());
                     }
                 }
                 if (Drink.IsChecked == true)
@@ -167,29 +159,40 @@ namespace FastFoodApp
 
                 if (Fries.IsChecked == true)
                     fries = 1;
-                  
+
                 // Create a sandwich
                 sandwichOrder = new Sandwich(sandwichType, sandwichPrice, toppings);
 
                 // Create the order
-                finalOrder.addSandwich(sandwichOrder);
-                finalOrder.addDrinks(drinks);
-                finalOrder.addFries(fries);
+                try
+                {
+                    finalOrder.addSandwich(sandwichOrder);
+                    finalOrder.addDrinks(drinks);
+                    finalOrder.addFries(fries);
+                }
+                catch (ArgumentException)
+                {
+                    Messages.Text = "Invalid order. Please verify that a sandwich was ordered, or that the drinks and fries are positive.";
+                }
+                catch (Exception)
+                {
+                    Messages.Text = "Invalid order. Please add a sandwich.";
+                }
 
                 // Display the current price for the order
-                CurrentPrice.Text = $"\n\nSandwich Price: {String.Format("{0:C}", finalOrder.calculateSandwichPrices())}" +
-                                    $"\nDrinks Price:      {String.Format("{0:C}", finalOrder.calculateDrinkPrices())}" + 
+                CurrentPrice.Text = $"\nSandwich Price: {String.Format("{0:C}", finalOrder.calculateSandwichPrices())}" +
+                                    $"\nDrinks Price:      {String.Format("{0:C}", finalOrder.calculateDrinkPrices())}" +
                                     $"\nFries Price:         {String.Format("{0:C}", finalOrder.calculateFriesPrices())}" +
                                     $"\n{TAX * 100.0F}% Tax               {String.Format("{0:C}", finalOrder.calculateTax())}" +
                                     $"\n-----------------------------" +
-                                    $"\nTotal: {String.Format("{0:C}",finalOrder.calculateOrderPrice() + finalOrder.calculateTax())}";
-                Preview.Text += $"\nPrice: {String.Format("{0:C}", sandwichPrice)}" +
+                                    $"\nTotal: {String.Format("{0:C}", finalOrder.calculateOrderPrice() + finalOrder.calculateTax())}";
+                Preview.Text += $"\n\nPrice: {String.Format("{0:C}", sandwichPrice)}" +
                                 $"\n     Sandwich: {finalOrder.getSandwich(numOfOrders).getType().ToString()}" +
                                 $"\n     Toppings: {finalOrder.getSandwich(numOfOrders).getToppings()}" +
                                 $"\n     Fries: {fries}     Drinks: {drinks}";
 
                 numOfOrders++;
-                fries  = 0;
+                fries = 0;
                 drinks = 0;
 
                 // Clear Form
@@ -212,12 +215,17 @@ namespace FastFoodApp
             }
         }
 
-        private void Orderbtn_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Finalizes the order and refreshed the form so that a new order can be placed.
+        /// </summary>
+        /// <param name="sender">The control who initated the action</param>
+        /// <param name="e">Information pertaining to the event</param>
+        private void confirmOrder(object sender, RoutedEventArgs e)
         {
             clearForm();
-            Preview.Text      = String.Empty;
+            Preview.Text = String.Empty;
             CurrentPrice.Text = String.Empty;
-            Messages.Text     = "Order Completed!";
+            Messages.Text = "Order Completed!";
         }
     }
 }

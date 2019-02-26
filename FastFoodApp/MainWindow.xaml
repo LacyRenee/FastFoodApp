@@ -12,7 +12,7 @@
             <RowDefinition Height="206*"/>
         </Grid.RowDefinitions>
         <TextBlock x:Name="Instructions" HorizontalAlignment="Left" Margin="48,38,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="148" Height="36"><Run Text="Please select your sandwich and toppings:"/><LineBreak/><Run/></TextBlock>
-        <TextBlock x:Name="AppTitle" HorizontalAlignment="Center" TextWrapping="Wrap" Text="Sandwiches Galore" VerticalAlignment="Top" FontWeight="Bold" FontSize="18" Margin="322,10,292,0" Width="178"/>
+        <TextBlock x:Name="AppTitle" HorizontalAlignment="Center" TextWrapping="Wrap" Text="Sandwiches Galore" VerticalAlignment="Top" FontWeight="Bold" FontSize="18" Margin="322,10,292,0" Width="178" Foreground="Black"/>
         <ComboBox x:Name="SandwichTypeList" HorizontalAlignment="Left" Margin="48,79,0,0" VerticalAlignment="Top" Width="120" />
         <Grid  x:Name="ToppingsList" Grid.RowSpan="2">
             <CheckBox x:Name="Topping1" Content="" HorizontalAlignment="Left" Margin="48,109,0,0" VerticalAlignment="Top"/>
@@ -32,7 +32,7 @@
         </StackPanel>
         <TextBlock x:Name="CurrentPrice" Text="" Margin="616,0,10,20" Height="132" VerticalAlignment="Bottom"/>
         <TextBlock x:Name="Preview" Margin="309,39,181,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="360" Grid.RowSpan="2"/>
-        <Button x:Name="Orderbtn" Content="Confrim Order!"  HorizontalAlignment="Left" Margin="638,198,0,0" VerticalAlignment="Top" Width="100" RenderTransformOrigin="0.547,0.1" Height="20" Grid.RowSpan="2" Click="Orderbtn_Click"/>
+        <Button x:Name="Orderbtn" Content="Confrim Order!" Visibility="Hidden" HorizontalAlignment="Left" Margin="638,198,0,0" VerticalAlignment="Top" Width="100" RenderTransformOrigin="0.547,0.1" Height="20" Grid.RowSpan="2" Click="confirmOrder"/>
 
     </Grid>
 </Window>
