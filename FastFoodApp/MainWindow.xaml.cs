@@ -17,14 +17,14 @@ namespace FastFoodApp
     {
         // Constants
         public const float CHICKEN_PRICE = 8.99F;
-        public const float DRINK_PRICE = 0.99F;
-        public const float FISH_PRICE = 5.99F;
-        public const float FRIES_PRICE = 1.99F;
-        public const float TURKEY_PRICE = 9.99F;
-        public const float VEGGIE_PRICE = 12.99F;
-        public const float TAX = 0.02F;
+        public const float DRINK_PRICE   = 0.99F;
+        public const float FISH_PRICE    = 5.99F;
+        public const float FRIES_PRICE   = 1.99F;
+        public const float TURKEY_PRICE  = 9.99F;
+        public const float VEGGIE_PRICE  = 12.99F;
+        public const float TAX           = 0.02F;
 
-        // Structure
+        // Structures
         public struct Sandwich
         {
             private SandwichTypes type;
@@ -33,8 +33,8 @@ namespace FastFoodApp
 
             public Sandwich(SandwichTypes newType, float newPrice, List<String> newToppings)
             {
-                this.type = newType;
-                this.price = newPrice;
+                this.type     = newType;
+                this.price    = newPrice;
                 this.toppings = newToppings;
             }
 
@@ -51,7 +51,9 @@ namespace FastFoodApp
                 String toppingsList = String.Empty;
 
                 foreach (String t in toppings)
+                {
                     toppingsList += t + ' ';
+                }
 
                 return toppingsList;
             }
@@ -64,9 +66,9 @@ namespace FastFoodApp
         private float sandwichPrice;
         private List<String> toppings;
         private Order finalOrder = new Order();
-        private int numOfOrders = 0;
-        private int drinks = 0;
-        private int fries = 0;
+        private int numOfOrders  = 0;
+        private int drinks       = 0;
+        private int fries        = 0;
 
         public MainWindow()
         {
@@ -74,27 +76,34 @@ namespace FastFoodApp
             InitializeComponent();
 
             // Initialize ComboBox with the sandwhich types and prices
-            foreach (SandwichTypes s in Enum.GetValues(typeof(SandwichTypes)))
+            try
             {
-                switch (s)
+                foreach (SandwichTypes s in Enum.GetValues(typeof(SandwichTypes)))
                 {
-                    case SandwichTypes.Chicken:
-                        SandwichTypeList.Items.Add(s + String.Format(" - {0:C}", CHICKEN_PRICE));
-                        break;
-                    case SandwichTypes.Fish:
-                        SandwichTypeList.Items.Add(s + String.Format(" - {0:C}", FISH_PRICE));
-                        break;
-                    case SandwichTypes.Turkey:
-                        SandwichTypeList.Items.Add(s + String.Format(" - {0:C}", TURKEY_PRICE));
-                        break;
-                    case SandwichTypes.Veggie:
-                        SandwichTypeList.Items.Add(s + String.Format(" - {0:C}", VEGGIE_PRICE));
-                        break;
-                    default:
-                        break;
+                    switch (s)
+                    {
+                        case SandwichTypes.Chicken:
+                            SandwichTypeList.Items.Add(s + String.Format(" - {0:C}", CHICKEN_PRICE));
+                            break;
+                        case SandwichTypes.Fish:
+                            SandwichTypeList.Items.Add(s + String.Format(" - {0:C}", FISH_PRICE));
+                            break;
+                        case SandwichTypes.Turkey:
+                            SandwichTypeList.Items.Add(s + String.Format(" - {0:C}", TURKEY_PRICE));
+                            break;
+                        case SandwichTypes.Veggie:
+                            SandwichTypeList.Items.Add(s + String.Format(" - {0:C}", VEGGIE_PRICE));
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException("Sandwich type doesn't exist");
+                    }
                 }
             }
-
+            catch (ArgumentOutOfRangeException)
+            {
+                Messages.Text = "Sandwich type could not load";
+            }
+            
             // Initialilze the CheckBoxes with the ingredients
             Topping1.Content = Toppings.cheese;
             Topping2.Content = Toppings.egg;
@@ -107,8 +116,6 @@ namespace FastFoodApp
         /// <summary>
         /// Creates a meal and adds it to the order
         /// </summary>
-        /// <param name="sender">The control who initated the action</param>
-        /// <param name="e">Information pertaining to the event</param>
         private void AddToOrder(object sender, RoutedEventArgs e)
         {
             if (SandwichTypeList.SelectedItem == null)
@@ -126,25 +133,31 @@ namespace FastFoodApp
                 sandwichType = (SandwichTypes)Enum.Parse(typeof(SandwichTypes), type[0]);
 
                 // Get the sandwich price
-                switch (sandwichType)
+                try
                 {
-                    case SandwichTypes.Chicken:
-                        sandwichPrice = CHICKEN_PRICE;
-                        break;
-                    case SandwichTypes.Fish:
-                        sandwichPrice = FISH_PRICE;
-                        break;
-                    case SandwichTypes.Turkey:
-                        sandwichPrice = TURKEY_PRICE;
-                        break;
-                    case SandwichTypes.Veggie:
-                        sandwichPrice = VEGGIE_PRICE;
-                        break;
-                    default:
-                        sandwichPrice = 0.0F;
-                        break;
+                    switch (sandwichType)
+                    {
+                        case SandwichTypes.Chicken:
+                            sandwichPrice = CHICKEN_PRICE;
+                            break;
+                        case SandwichTypes.Fish:
+                            sandwichPrice = FISH_PRICE;
+                            break;
+                        case SandwichTypes.Turkey:
+                            sandwichPrice = TURKEY_PRICE;
+                            break;
+                        case SandwichTypes.Veggie:
+                            sandwichPrice = VEGGIE_PRICE;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException("Price does not exist");
+                    }
                 }
-
+                catch (ArgumentOutOfRangeException)
+                {
+                    Messages.Text = "Sandwich price could not be calculated";
+                }
+                
                 // Get the sandwich toppings, fries, and drinks
                 foreach (CheckBox c in ToppingsList.Children.OfType<CheckBox>())
                 {
@@ -191,17 +204,13 @@ namespace FastFoodApp
                                 $"\n     Toppings: {finalOrder.getSandwich(numOfOrders).getToppings()}" +
                                 $"\n     Fries: {fries}     Drinks: {drinks}";
 
-                numOfOrders++;
-                fries = 0;
-                drinks = 0;
-
                 // Clear Form
                 clearForm();
             }
         }
 
         /// <summary>
-        /// Clears the sandwich type selection and the toppings checkboxes
+        /// Clears and resets the form for another order
         /// </summary>
         public void clearForm()
         {
@@ -213,19 +222,21 @@ namespace FastFoodApp
                     c.IsChecked = false;
                 }
             }
+
+            numOfOrders++;
+            fries  = 0;
+            drinks = 0;
         }
 
         /// <summary>
-        /// Finalizes the order and refreshed the form so that a new order can be placed.
+        /// Finalizes the order and refreshes the form so that a new order can be placed.
         /// </summary>
-        /// <param name="sender">The control who initated the action</param>
-        /// <param name="e">Information pertaining to the event</param>
         private void confirmOrder(object sender, RoutedEventArgs e)
         {
             clearForm();
-            Preview.Text = String.Empty;
+            Preview.Text      = String.Empty;
             CurrentPrice.Text = String.Empty;
-            Messages.Text = "Order Completed!";
+            Messages.Text     = "Order Completed!";
         }
     }
 }
